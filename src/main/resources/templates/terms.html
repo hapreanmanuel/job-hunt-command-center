@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Terms - Job Hunt Command Center')}"></head>
+<body>
+<header class="topbar">
+  <a th:replace="~{layout :: brand}"></a>
+</header>
+
+<main class="legal">
+  <h1>Terms</h1>
+  <p class="muted">Last updated: 5 November 2026</p>
+  <p>By using Job Hunt Command Center you agree to these terms. They're short on purpose.</p>
+  <ol>
+    <li>
+      <strong>A free experiment, as is.</strong> It runs on free hosting, with no promise that it's
+      available. It can be slow, lose your data, or stop at any time, with or without notice. Keep
+      your own copy of anything important: <strong>Download my data</strong> makes one.
+    </li>
+    <li>
+      <strong>Access.</strong> Free hosting has tight limits, so access is by invitation, and I may
+      end it at any time. If the app moves to proper hosting, it may open to everyone.
+    </li>
+    <li>
+      <strong>Your account.</strong> You sign in with Google and are responsible for what happens
+      under your account. You must be at least 16.
+    </li>
+    <li>
+      <strong>What you write.</strong> It stays yours. Only store what you're allowed to, and when
+      your notes mention other people, such as interviewers, keep it to what you need.
+    </li>
+    <li>
+      <strong>Acceptable use.</strong> No attempts to break, overload or scrape the service, and
+      nothing illegal.
+    </li>
+    <li th:if="${!#strings.isEmpty(coffeeUrl)}">
+      <strong>Support.</strong> A coffee on Buy Me a Coffee is a voluntary gift: it buys no features,
+      access or rights, and isn't refundable except where the law requires. Payments are handled by
+      Buy Me a Coffee and Stripe, under their own terms.
+    </li>
+    <li>
+      <strong>Liability.</strong> To the extent the law allows, I'm not liable for losses from using
+      the app, including lost data or anything it fails to remind you of.
+    </li>
+    <li>
+      <strong>Changes and ending.</strong> I may change these terms, with notice in the app for
+      important changes, or close the app. You can stop using it and delete your data at any time.
+    </li>
+    <li>
+      <strong>Law.</strong> These terms are governed by the law of Romania. If you use the app as a
+      consumer in another EU country, its consumer protections still apply to you.
+    </li>
+  </ol>
+  <p>Questions: <a th:href="'mailto:' + ${contactEmail}" th:text="${contactEmail}"></a>.</p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Privacy - Job Hunt Command Center')}"></head>
+<body>
+<header class="topbar">
+  <a th:replace="~{layout :: brand}"></a>
+</header>
+
+<main class="legal">
+  <h1>Privacy</h1>
+  <p class="muted">Last updated: 5 November 2026</p>
+  <p>
+    Job Hunt Command Center is run by <span th:text="${siteOwner}"></span> ("I"). This page says what
+    is kept, why, and what you can do about it. Questions:
+    <a th:href="'mailto:' + ${contactEmail}" th:text="${contactEmail}"></a>.
+  </p>
+
+  <h2>What is kept</h2>
+  <ul>
+    <li><strong>What you write:</strong> your jobs, listings, salaries, rounds and debriefs.</li>
+    <li><strong>Your account:</strong> an id derived from your Google account, and when it was created.</li>
+  </ul>
+
+  <h2>Signing in</h2>
+  <p>
+    Google confirms who you are. The app uses your Google account number and email address to check
+    that you're invited, then keeps only the id above. Your email address isn't stored in the database.
+  </p>
+  <p>
+    To let you in, I keep your email address in the app's hosting settings and in Google's list of
+    testers. If you used the access request form, your answers stay in Google Forms.
+  </p>
+
+  <h2>Cookies and logs</h2>
+  <p>
+    One cookie keeps you signed in. It's strictly necessary, so no consent banner is needed, and the
+    sign-in ends after at most 14 days without use. There are no analytics, no advertising and no
+    tracking, and your data is never sold or shared.
+  </p>
+  <p>
+    The app logs its own errors. Servers see your IP address, as with any website, and the hosting
+    providers may log it for security.
+  </p>
+
+  <h2>Who can see it</h2>
+  <ul>
+    <li><strong>Other users:</strong> no. Everything you write is kept apart from their data.</li>
+    <li>
+      <strong>Me:</strong> I can read the database. I only look at someone's data to fix a problem
+      or answer their request.
+    </li>
+  </ul>
+
+  <h2>Who handles it for me</h2>
+  <ul>
+    <li><strong>Render</strong> runs the app, in Frankfurt, Germany.</li>
+    <li><strong>Supabase</strong> runs the database, in Frankfurt, Germany.</li>
+    <li><strong>Google</strong> handles sign-in and the access request form.</li>
+    <li th:if="${!#strings.isEmpty(coffeeUrl)}">
+      <strong>Buy Me a Coffee</strong> (with Stripe for payments) handles donations, under its own
+      privacy policy. It shows me what a supporter chooses to share, which I use only to say thanks
+      and keep as long as tax law requires.
+    </li>
+  </ul>
+
+  <h2>Outside the EU</h2>
+  <p>
+    Your data is stored in Germany. Render, Supabase and Google are US companies, so US
+    authorities may be able to ask them for what they handle. Such transfers rely on the EU-US Data
+    Privacy Framework or the EU's standard contractual clauses.
+  </p>
+
+  <h2>Why (legal bases, for the GDPR)</h2>
+  <ul>
+    <li>To give you the service you asked for: your account and your data (contract).</li>
+    <li>To keep it safe and working, and to answer your mail (legitimate interest).</li>
+  </ul>
+  <p>
+    Home sorts your jobs by what needs you soonest. That only arranges your own list: no automated
+    decisions are made about you, and no profile of you is built.
+  </p>
+
+  <h2>How long it's kept</h2>
+  <ul>
+    <li><strong>Your account and data:</strong> until you delete them, or until the service ends.</li>
+    <li><strong>Your email address in the invitation lists:</strong> until your access ends.</li>
+    <li><strong>Mail you send me:</strong> as long as I need it to answer you.</li>
+  </ul>
+  <p>
+    I keep no backups of your data, and the free plans include none. What you delete is gone at once,
+    and if the service loses your data, it can't be restored.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    <strong>Download my data</strong> gives you a copy at any time. <strong>Delete my data</strong>
+    removes your account and everything in it straight away, and signs you out everywhere.
+  </p>
+  <p>
+    You can also ask me for a copy of your data, or to correct, erase or restrict it, or object to how
+    it's used. I'll answer within a month. You can complain to a data protection authority: mine is
+    Romania's ANSPDCP (dataprotection.ro), or use the one where you live in the EU.
+  </p>
+
+  <h2>Changes</h2>
+  <p>If this page changes, the date at the top changes too. Important changes will be announced in the app.</p>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

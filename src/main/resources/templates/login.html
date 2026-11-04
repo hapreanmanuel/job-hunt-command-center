@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Sign in - Job Hunt Command Center')}"></head>
+<body>
+<main class="login">
+  <div class="login-card">
+    <span class="brand-mark"></span>
+    <h1>Job Hunt Command Center</h1>
+    <p class="muted">Keep each job application in one place, know what to do next, and remember what happened in every interview.</p>
+    <a class="sign-in" href="/oauth2/authorization/google">Continue with Google</a>
+    <p class="error" th:if="${param.error != null and param.error[0] == 'not_invited'}">This account hasn't been invited yet.</p>
+    <p class="error" th:if="${param.error != null and param.error[0] != 'not_invited'}">Sign-in didn't complete. Try again.</p>
+    <p class="muted hint">
+      Access is by invitation while this runs on free hosting. It may open to everyone if it moves to proper hosting.
+      <a th:if="${!#strings.isEmpty(accessRequestUrl)}" th:href="${accessRequestUrl}" target="_blank" rel="noopener">Request access</a>
+    </p>
+    <p class="muted hint">
+      Free hosting means a slow first load, no backups, and it could stop at any time. The person running it can read
+      the database. By signing in you accept the <a href="/terms">Terms</a> and <a href="/privacy">Privacy</a> page.
+    </p>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

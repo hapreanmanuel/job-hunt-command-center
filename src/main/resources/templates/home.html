@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Home - Job Hunt Command Center')}"></head>
+<body>
+<header class="topbar">
+  <a th:replace="~{layout :: brand}"></a>
+  <span id="today" class="topbar-date"></span>
+  <span class="topbar-actions">
+    <span th:replace="~{layout :: account}"></span>
+    <button type="button" id="add-job" class="primary">+ Add job</button>
+  </span>
+</header>
+
+<main class="home">
+  <section class="stats" aria-label="Summary">
+    <div class="stat stat-move">
+      <span class="stat-label">Your move</span>
+      <strong id="stat-move" class="stat-value">-</strong>
+      <span id="stat-move-note" class="stat-note"></span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Active jobs</span>
+      <strong id="stat-active" class="stat-value">-</strong>
+      <span id="stat-active-note" class="stat-note"></span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Next round</span>
+      <strong id="stat-next" class="stat-value stat-text">-</strong>
+      <span id="stat-next-note" class="stat-note"></span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">This week</span>
+      <strong id="stat-week" class="stat-value">-</strong>
+      <span id="stat-week-note" class="stat-note"></span>
+    </div>
+  </section>
+
+  <section class="panel jobs-panel" aria-label="Jobs">
+    <div id="jobs" class="jobs"></div>
+    <details id="closed-section" class="closed" hidden>
+      <summary id="closed-title"></summary>
+      <div id="closed-jobs"></div>
+    </details>
+  </section>
+
+  <section class="panel calendar-panel" aria-labelledby="cal-title">
+    <div class="calendar-bar">
+      <h2 id="cal-title"></h2>
+      <div class="nav-buttons">
+        <button type="button" id="cal-prev" class="icon" aria-label="Previous">&lsaquo;</button>
+        <button type="button" id="cal-today">Today</button>
+        <button type="button" id="cal-next" class="icon" aria-label="Next">&rsaquo;</button>
+      </div>
+      <div class="segmented">
+        <button type="button" id="cal-week" aria-pressed="true">Week</button>
+        <button type="button" id="cal-month" aria-pressed="false">Month</button>
+      </div>
+    </div>
+    <div id="calendar" class="calendar"></div>
+  </section>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<dialog id="job-dialog">
+  <form id="job-form" method="dialog">
+    <h2>Add job</h2>
+    <div class="form-grid">
+      <label>Company <input name="company" required maxlength="200" /></label>
+      <label>Role <input name="roleTitle" required maxlength="200" /></label>
+      <label>Status
+        <select name="status">
+          <option value="WISHLIST">Wishlist</option>
+          <option value="APPLIED" selected>Applied</option>
+          <option value="INTERVIEWING">Interviewing</option>
+          <option value="OFFER">Offer</option>
+        </select>
+      </label>
+      <label>Applied date <input type="date" name="appliedDate" /></label>
+      <label>How it started
+        <select name="source">
+          <option value="FOUND_MYSELF">I found it and applied</option>
+          <option value="RECRUITER">A recruiter contacted me</option>
+          <option value="REFERRAL">Someone referred me</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </label>
+      <label>How it started: details <input name="sourceNote" maxlength="300" placeholder="Applied on their careers page" /></label>
+    </div>
+    <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
+    <label>Link to the posting <input type="url" name="jobUrl" maxlength="1000" placeholder="https://" /></label>
+    <label>Job listing <textarea name="jobDescription" rows="10" maxlength="50000" placeholder="Paste the listing exactly as written"></textarea></label>
+    <div class="dialog-actions">
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save job</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/js/api.js"></script>
+<script src="/js/calendar.js"></script>
+<script src="/js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+  Shared fragments used by the pages.
+  This file is never routed to directly - PageController never returns "layout".
+-->
+<head th:fragment="head(title)">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${title}">Job Hunt Command Center</title>
+  <link rel="stylesheet" href="/css/theme.css" />
+</head>
+<body>
+
+<a th:fragment="brand" href="/" class="brand"><span class="brand-mark"></span>Job Hunt Command Center</a>
+
+<footer th:fragment="footer" class="site-footer">
+  <a href="/privacy">Privacy</a>
+  <a href="/terms">Terms</a>
+  <a th:if="${!#strings.isEmpty(coffeeUrl)}" th:href="${coffeeUrl}" target="_blank" rel="noopener">Buy me a coffee</a>
+</footer>
+
+<span th:fragment="account" class="account-actions">
+  <button type="button" id="download-data">Download my data</button>
+  <button type="button" id="sign-out" th:if="${signInEnabled}">Sign out</button>
+  <button type="button" id="delete-data" class="danger" th:if="${signInEnabled}">Delete my data</button>
+</span>
+
+</body>
+</html>

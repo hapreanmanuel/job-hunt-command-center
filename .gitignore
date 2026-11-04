@@ -1,0 +1,23 @@
+target/
+*.class
+.idea/
+*.iml
+.vscode/
+.env
+*.log
+.DS_Store
+
+# Private notes stay on this machine
+docs/
+AGENTS.md
+.claude/
+
+# Secrets and personal data never go in git
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*-backup.sql
+*.dump
+job-hunt-*.json

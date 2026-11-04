@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Job - Job Hunt Command Center')}"></head>
+<body>
+
+<header class="topbar">
+  <a th:replace="~{layout :: brand}"></a>
+  <span class="topbar-actions">
+    <a href="/" class="back">&lsaquo; Back to Home</a>
+    <span th:replace="~{layout :: account}"></span>
+  </span>
+</header>
+
+<main class="job-page">
+  <p id="not-found" class="empty" hidden>This job doesn't exist. <a href="/">Back to Home</a></p>
+
+  <div id="job" class="job-page-inner" hidden>
+    <div class="job-title">
+      <span id="job-dot" class="dot"></span>
+      <div>
+        <h1 id="job-company"></h1>
+        <p id="job-role"></p>
+      </div>
+      <span id="job-status" class="pill"></span>
+    </div>
+
+    <div id="stepper" class="stepper"></div>
+
+    <div class="job-columns">
+      <div class="job-main">
+        <div id="next-step" class="next-step">
+          <span id="next-step-text"></span>
+          <button type="button" id="next-step-action" class="primary" hidden></button>
+        </div>
+
+        <section class="card" aria-labelledby="rounds-title">
+          <div class="card-head">
+            <h2 id="rounds-title">Timeline</h2>
+            <button type="button" id="add-round">+ Add round</button>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+
+        <div class="job-actions">
+          <button type="button" id="update-status">Update status</button>
+          <button type="button" id="edit-job">Edit job</button>
+          <button type="button" id="archive-job">Archive</button>
+          <button type="button" id="delete-job" class="danger">Delete</button>
+        </div>
+      </div>
+
+      <aside class="job-side">
+        <section id="listing-section" class="card listing-card" aria-labelledby="listing-title">
+          <div class="card-head">
+            <h2 id="listing-title">Job listing</h2>
+            <a id="job-link" class="posting-link" rel="noopener noreferrer" target="_blank" hidden>Open the posting</a>
+          </div>
+          <div id="job-listing" class="prewrap listing"></div>
+        </section>
+
+        <section class="card" aria-labelledby="details-title">
+          <div class="card-head"><h2 id="details-title">Details</h2></div>
+          <dl id="job-details" class="details"></dl>
+        </section>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<dialog id="round-dialog">
+  <form id="round-form" method="dialog">
+    <h2 id="round-title">Add round</h2>
+    <div class="form-grid">
+      <label>Type <select name="type" id="round-type"></select></label>
+      <label><span id="round-date-label">Date and time</span> <input type="datetime-local" name="scheduledAt" /></label>
+      <label>Result <select name="outcome" id="round-outcome"></select></label>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" id="round-delete" class="danger left" hidden>Delete round</button>
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save round</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="debrief-dialog">
+  <form id="debrief-form" method="dialog">
+    <h2 id="debrief-title">Debrief</h2>
+    <fieldset class="scale">
+      <legend>How did it feel?</legend>
+      <div id="felt-scale"></div>
+      <span class="muted">1 is bad, 5 is great</span>
+    </fieldset>
+    <fieldset class="scale">
+      <legend>How difficult was it?</legend>
+      <div id="difficulty-scale"></div>
+      <span class="muted">1 is easy, 5 is very hard</span>
+    </fieldset>
+    <label>Questions they asked <textarea name="questionsAsked" rows="5" maxlength="20000"></textarea></label>
+    <label>How did it go? <textarea name="debrief" rows="5" maxlength="20000"></textarea></label>
+    <p class="muted hint">Refer to people by role, such as "the tech lead", rather than by name.</p>
+    <label>Result <select name="outcome" id="debrief-outcome"></select></label>
+    <p id="debrief-error" class="error" hidden>Pick both scores to finish the debrief.</p>
+    <div class="dialog-actions">
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save debrief</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="status-dialog">
+  <form id="status-form" method="dialog">
+    <h2>Update status</h2>
+    <label>Status <select name="status" id="status-select"></select></label>
+    <label id="status-date-field"><span id="status-date-label">Date</span> <input type="date" name="date" id="status-date" /></label>
+    <div class="dialog-actions">
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save status</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="edit-dialog">
+  <form id="edit-form" method="dialog">
+    <h2>Edit job</h2>
+    <div class="form-grid">
+      <label>Company <input name="company" required maxlength="200" /></label>
+      <label>Role <input name="roleTitle" required maxlength="200" /></label>
+      <label>Location <input name="location" maxlength="200" /></label>
+      <label>Work mode
+        <select name="workMode">
+          <option value="UNKNOWN">Unknown</option>
+          <option value="REMOTE">Remote</option>
+          <option value="HYBRID">Hybrid</option>
+          <option value="ONSITE">Onsite</option>
+        </select>
+      </label>
+      <label>Applied date <input type="date" name="appliedDate" /></label>
+      <label>How it started
+        <select name="source">
+          <option value="FOUND_MYSELF">I found it and applied</option>
+          <option value="RECRUITER">A recruiter contacted me</option>
+          <option value="REFERRAL">Someone referred me</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </label>
+    </div>
+    <label>How it started: details <input name="sourceNote" maxlength="300" placeholder="Applied on their careers page" /></label>
+    <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
+    <label>Salary offered <input name="salaryOffer" maxlength="200" /></label>
+    <label>Link to the posting <input type="url" name="jobUrl" maxlength="1000" placeholder="https://" /></label>
+    <label>Job listing <textarea name="jobDescription" rows="10" maxlength="50000"></textarea></label>
+    <div class="dialog-actions">
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save changes</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="/js/api.js"></script>
+<script src="/js/job.js"></script>
+</body>
+</html>
