@@ -82,14 +82,17 @@ class SecurityRulesTest extends AbstractIntegrationTest {
     @DisplayName("""
             Given a visitor
             When they open the sign-in page or the health check
-            Then both answer, and the page offers Google
+            Then both answer, and the page offers GitHub and Google
             """)
     void signInPageAndHealthArePublic() {
         // When / Then
         clientWithoutSession().get().uri("/login").exchange()
                 .expectStatus().isOk()
                 .expectBody(String.class)
-                .value(page -> assertTrue(page.contains("/oauth2/authorization/google")));
+                .value(page -> {
+                    assertTrue(page.contains("/oauth2/authorization/google"), page);
+                    assertTrue(page.contains("/oauth2/authorization/github"), page);
+                });
         clientWithoutSession().get().uri("/actuator/health").exchange().expectStatus().isOk();
     }
 
@@ -144,6 +147,22 @@ class SecurityRulesTest extends AbstractIntegrationTest {
                     assertTrue(location.startsWith("https://accounts.google.com/"), location);
                     assertTrue(location.contains("prompt=select_account"), location);
                 });
+    }
+
+    @Test
+    @DisplayName("""
+            Given a visitor
+            When they start signing in with GitHub
+            Then they're sent to GitHub
+            """)
+    void signInStartsAtGithub() {
+        // When
+        var response = clientWithoutSession().get().uri("/oauth2/authorization/github").exchange();
+
+        // Then
+        response.expectStatus().is3xxRedirection()
+                .expectHeader().value(HttpHeaders.LOCATION, location ->
+                        assertTrue(location.startsWith("https://github.com/login/oauth/authorize"), location));
     }
 
     @Test

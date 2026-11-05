@@ -7,7 +7,8 @@
     <span class="brand-mark"></span>
     <h1>Job Hunt Command Center</h1>
     <p class="muted">Keep each job application in one place, know what to do next, and remember what happened in every interview.</p>
-    <a class="sign-in" href="/oauth2/authorization/google">Continue with Google</a>
+    <a class="sign-in" th:if="${signInProviders.contains('github')}" href="/oauth2/authorization/github">Continue with GitHub</a>
+    <a class="sign-in" th:if="${signInProviders.contains('google')}" href="/oauth2/authorization/google">Continue with Google</a>
     <p class="error" th:if="${param.error != null and param.error[0] == 'not_invited'}">This account hasn't been invited yet.</p>
     <p class="error" th:if="${param.error != null and param.error[0] != 'not_invited'}">Sign-in didn't complete. Try again.</p>
     <p class="muted hint">

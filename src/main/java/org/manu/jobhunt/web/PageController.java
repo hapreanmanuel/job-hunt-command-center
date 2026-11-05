@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Set;
+
 /**
  * Server-rendered shell pages. They render once and then fetch and change data client-side
  * through the /api endpoints, so they hold no user data.
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PageController {
 
     private final boolean signInEnabled;
+    private final Set<String> signInProviders;
     private final String siteOwner;
     private final String contactEmail;
     private final String coffeeUrl;
@@ -22,11 +25,13 @@ public class PageController {
 
     PageController(
             @Value("${app.sign-in-enabled}") boolean signInEnabled,
+            @Value("${app.sign-in-providers}") Set<String> signInProviders,
             @Value("${app.site.owner}") String siteOwner,
             @Value("${app.site.contact-email}") String contactEmail,
             @Value("${app.site.coffee-url}") String coffeeUrl,
             @Value("${app.site.access-request-url}") String accessRequestUrl) {
         this.signInEnabled = signInEnabled;
+        this.signInProviders = signInProviders;
         this.siteOwner = siteOwner;
         this.contactEmail = contactEmail;
         this.coffeeUrl = coffeeUrl;
@@ -37,6 +42,7 @@ public class PageController {
     @ModelAttribute
     void pageSettings(Model model) {
         model.addAttribute("signInEnabled", signInEnabled);
+        model.addAttribute("signInProviders", signInProviders);
         model.addAttribute("siteOwner", siteOwner);
         model.addAttribute("contactEmail", contactEmail);
         model.addAttribute("coffeeUrl", coffeeUrl);

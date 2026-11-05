@@ -25,8 +25,8 @@ import java.io.IOException;
 /**
  * Who may call what, and how signing in works.
  * <ul>
- *     <li>Hosted (the default): sign in with Google. GET /oauth2/authorization/google starts it,
- *     Google calls back /login/oauth2/code/google, and the session lives in an HttpOnly
+ *     <li>Hosted (the default): sign in with a provider. GET /oauth2/authorization/{provider} starts it,
+ *     the provider calls back /login/oauth2/code/{provider}, and the session lives in an HttpOnly
  *     cookie.</li>
  *     <li>Local (profile "local"): one fixed user, no sign-in. It takes an explicit profile, so
  *     a missing setting can't leave a hosted copy open.</li>
@@ -87,7 +87,7 @@ public class SecurityConfig {
                         ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)));
     }
 
-    /** Asks Google to show its account picker, so someone with two accounts can choose. */
+    /** Asks the provider to show its account picker, so someone with two accounts can choose. */
     private static OAuth2AuthorizationRequestResolver withAccountPicker(ClientRegistrationRepository clientRegistrations) {
         final DefaultOAuth2AuthorizationRequestResolver resolver = new DefaultOAuth2AuthorizationRequestResolver(
                 clientRegistrations, OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI);

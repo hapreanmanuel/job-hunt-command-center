@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * What signing in writes, once Google has confirmed who someone is.
+ * What signing in writes, once the provider has confirmed who someone is.
  */
 class SignInTest extends AbstractIntegrationTest {
 
@@ -50,6 +50,22 @@ class SignInTest extends AbstractIntegrationTest {
         // When / Then
         assertThrows(SignInNotInvitedException.class, () -> userApplication.signIn(signInAs("stranger@example.com")));
         assertEquals(before, DATABASE.queryForObject("SELECT count(*) FROM app.app_user", Integer.class));
+    }
+
+    @Test
+    @DisplayName("""
+            Given an invited GitHub user
+            When they sign in
+            Then their user row exists
+            """)
+    void signInRegistersAGithubUser() {
+        // When
+        final UUID user = userApplication.signIn(SignInCommand.builder()
+                .provider("github").providerUserId("42").username("invited-user")
+                .build());
+
+        // Then
+        assertEquals(1, countUsers(user));
     }
 
     private SignInCommand signInAs(String email) {

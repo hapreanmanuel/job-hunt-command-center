@@ -20,32 +20,30 @@ import java.util.stream.Collectors;
 @Service
 class UserService {
 
+    private static final String GITHUB = "github";
+
     private final Set<String> invitedEmails;
+    private final Set<String> invitedGithubUsers;
     private final boolean open;
 
     /**
      * Written by hand (not @RequiredArgsConstructor), so the settings it reads are visible here.
      *
-     * @param invitedEmails comma-separated; empty lets nobody in
-     * @param open          whether anyone may sign in, invited or not
+     * @param invitedEmails      comma-separated Google emails; empty lets nobody in
+     * @param invitedGithubUsers comma-separated GitHub usernames; empty lets nobody in
+     * @param open               whether anyone may sign in, invited or not
      */
     UserService(
             @Value("${app.access.invited-emails}") String invitedEmails,
+            @Value("${app.access.invited-github-users}") String invitedGithubUsers,
             @Value("${app.access.open}") boolean open) {
-        this.invitedEmails = Arrays.stream(invitedEmails.split(","))
-                .map(email -> email.trim().toLowerCase())
-                .filter(email -> !email.isEmpty())
-                .collect(Collectors.toSet());
+        this.invitedEmails = listOf(invitedEmails);
+        this.invitedGithubUsers = listOf(invitedGithubUsers);
         this.open = open;
     }
 
-    /** An unverified email proves nothing, so it never matches an invitation. */
     void requireAllowed(SignInCommand command) {
-        if (open) {
-            return;
-        }
-        final String email = command.getEmail();
-        if (!command.isEmailVerified() || email == null || !invitedEmails.contains(email.toLowerCase())) {
+        if (!open && !isInvited(command)) {
             throw new SignInNotInvitedException();
         }
     }
@@ -53,5 +51,22 @@ class UserService {
     UUID userIdOf(SignInCommand command) {
         final String identity = command.getProvider() + ":" + command.getProviderUserId();
         return UUID.nameUUIDFromBytes(identity.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** GitHub goes by username. For Google, an unverified email proves nothing, so it never matches. */
+    private boolean isInvited(SignInCommand command) {
+        if (GITHUB.equals(command.getProvider())) {
+            final String username = command.getUsername();
+            return username != null && invitedGithubUsers.contains(username.toLowerCase());
+        }
+        final String email = command.getEmail();
+        return command.isEmailVerified() && email != null && invitedEmails.contains(email.toLowerCase());
+    }
+
+    private static Set<String> listOf(String commaSeparated) {
+        return Arrays.stream(commaSeparated.split(","))
+                .map(entry -> entry.trim().toLowerCase())
+                .filter(entry -> !entry.isEmpty())
+                .collect(Collectors.toSet());
     }
 }

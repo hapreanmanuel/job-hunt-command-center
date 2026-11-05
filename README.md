@@ -41,9 +41,9 @@ attach it to someone else's job.
 
 **Your data can leave.** You can download everything as JSON. On a hosted copy, one button deletes
 your account: all your data hangs off a single row, so it goes in one step, and your sessions end
-with it. The database stores no email addresses, only an id derived from your Google account.
+with it. The database stores no email addresses, only an id derived from your sign-in account.
 
-**Closed unless you open it.** The default configuration is the hosted one. Without Google settings
+**Closed unless you open it.** The default configuration is the hosted one. Without sign-in settings
 it refuses to start, and with an empty invitation list nobody gets in. Running without sign-in
 takes an explicit `local` profile.
 

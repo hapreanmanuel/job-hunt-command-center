@@ -13,6 +13,8 @@ public class SignInCommand {
     private String provider;
     /** The provider's stable id for this person. Emails can change, this can't. */
     private String providerUserId;
+    /** Set by GitHub, which goes by username. Can change, so it only decides who is invited. */
+    private String username;
     private String email;
     private boolean emailVerified;
 }

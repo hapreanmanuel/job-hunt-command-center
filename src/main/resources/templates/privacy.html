@@ -18,17 +18,20 @@
   <h2>What is kept</h2>
   <ul>
     <li><strong>What you write:</strong> your jobs, listings, salaries, rounds and debriefs.</li>
-    <li><strong>Your account:</strong> an id derived from your Google account, and when it was created.</li>
+    <li><strong>Your account:</strong> an id derived from the account you sign in with, and when it was created.</li>
   </ul>
 
   <h2>Signing in</h2>
   <p>
-    Google confirms who you are. The app uses your Google account number and email address to check
-    that you're invited, then keeps only the id above. Your email address isn't stored in the database.
+    You sign in with GitHub or Google, which confirms who you are. The app uses your GitHub username,
+    or your Google email address, to check that you're invited. It uses your account number from either
+    one to work out the id above, and keeps only that id. No email address or username is stored in the
+    database.
   </p>
   <p>
-    To let you in, I keep your email address in the app's hosting settings and in Google's list of
-    testers. If you used the access request form, your answers stay in Google Forms.
+    To let you in, I keep your GitHub username or email address in the app's hosting settings, and for
+    Google, in its list of testers. If you used the access request form, your answers stay in Google
+    Forms.
   </p>
 
   <h2>Cookies and logs</h2>
@@ -55,7 +58,7 @@
   <ul>
     <li><strong>Render</strong> runs the app, in Frankfurt, Germany.</li>
     <li><strong>Supabase</strong> runs the database, in Frankfurt, Germany.</li>
-    <li><strong>Google</strong> handles sign-in and the access request form.</li>
+    <li><strong>GitHub</strong> and <strong>Google</strong> handle sign-in, and <strong>Google</strong> the access request form.</li>
     <li th:if="${!#strings.isEmpty(coffeeUrl)}">
       <strong>Buy Me a Coffee</strong> (with Stripe for payments) handles donations, under its own
       privacy policy. It shows me what a supporter chooses to share, which I use only to say thanks
@@ -65,7 +68,7 @@
 
   <h2>Outside the EU</h2>
   <p>
-    Your data is stored in Germany. Render, Supabase and Google are US companies, so US
+    Your data is stored in Germany. Render, Supabase, GitHub and Google are US companies, so US
     authorities may be able to ask them for what they handle. Such transfers rely on the EU-US Data
     Privacy Framework or the EU's standard contractual clauses.
   </p>
@@ -83,7 +86,7 @@
   <h2>How long it's kept</h2>
   <ul>
     <li><strong>Your account and data:</strong> until you delete them, or until the service ends.</li>
-    <li><strong>Your email address in the invitation lists:</strong> until your access ends.</li>
+    <li><strong>Your username or email address in the invitation lists:</strong> until your access ends.</li>
     <li><strong>Mail you send me:</strong> as long as I need it to answer you.</li>
   </ul>
   <p>

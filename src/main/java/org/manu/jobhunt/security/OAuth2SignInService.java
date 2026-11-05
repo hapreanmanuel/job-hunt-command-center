@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 /**
- * The hook Spring Security calls after Google confirms who signed in. The returned SignedInUser
+ * The hook Spring Security calls after the provider confirms who signed in. The returned SignedInUser
  * is what the session keeps.
  * <p>
  * Every failure leaves as an OAuth2AuthenticationException: it's the only kind Spring Security
@@ -50,6 +50,7 @@ public class OAuth2SignInService implements OAuth2UserService<OAuth2UserRequest,
         final SignInCommand command = SignInCommand.builder()
                 .provider(request.getClientRegistration().getRegistrationId())
                 .providerUserId(providerUser.getName())
+                .username(providerUser.getAttribute("login"))
                 .email(providerUser.getAttribute("email"))
                 .emailVerified("true".equals(String.valueOf(emailVerified)))
                 .build();

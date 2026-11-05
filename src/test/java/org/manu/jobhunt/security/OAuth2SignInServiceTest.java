@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for OAuth2SignInService: what happens after Google confirmed who signed in. Every
+ * Unit test for OAuth2SignInService: what happens after the provider confirmed who signed in. Every
  * failure must be an OAuth2AuthenticationException, the only kind Spring Security turns into the
  * redirect back to the sign-in page.
  */
@@ -97,6 +97,33 @@ class OAuth2SignInServiceTest {
 
     @Test
     @DisplayName("""
+            Given GitHub confirmed a user
+            When the sign-in hook runs
+            Then their stable id and username are passed on
+            """)
+    void loadUserPassesOnTheGithubUsername() {
+        // Given
+        final OAuth2SignInService service = new OAuth2SignInService(
+                request -> new DefaultOAuth2User(
+                        List.of(new SimpleGrantedAuthority("OAUTH2_USER")),
+                        Map.of("id", 42, "login", "alice-dev"),
+                        "id"),
+                userApplication);
+        when(userApplication.signIn(any())).thenReturn(USER_ID);
+
+        // When
+        service.loadUser(request("github"));
+
+        // Then
+        final ArgumentCaptor<SignInCommand> command = ArgumentCaptor.forClass(SignInCommand.class);
+        verify(userApplication).signIn(command.capture());
+        assertEquals("github", command.getValue().getProvider());
+        assertEquals("42", command.getValue().getProviderUserId());
+        assertEquals("alice-dev", command.getValue().getUsername());
+    }
+
+    @Test
+    @DisplayName("""
             Given someone who isn't invited
             When the sign-in hook runs
             Then it fails with the not_invited code the sign-in page explains
@@ -133,7 +160,11 @@ class OAuth2SignInServiceTest {
     }
 
     private static OAuth2UserRequest request() {
-        final ClientRegistration registration = ClientRegistration.withRegistrationId("google")
+        return request("google");
+    }
+
+    private static OAuth2UserRequest request(String provider) {
+        final ClientRegistration registration = ClientRegistration.withRegistrationId(provider)
                 .clientId("id")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .redirectUri("https://example.com/callback")
