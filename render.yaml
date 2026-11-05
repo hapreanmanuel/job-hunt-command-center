@@ -2,7 +2,7 @@
 # entered in the Render dashboard, never here.
 services:
   - type: web
-    name: job-hunt-command-center
+    name: job-hunt-center
     runtime: docker
     plan: free
     region: frankfurt
