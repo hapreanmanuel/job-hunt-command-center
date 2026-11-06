@@ -6,6 +6,8 @@ what's coming up, and one central place for everything about each application.
 I built it to keep myself organized while going through several interview processes at once. It
 does only that, and it only grows when real use shows a need.
 
+**Live at [job-hunt-center.onrender.com](https://job-hunt-center.onrender.com)**, by invitation.
+
 ## What it does
 
 - **Says what to do next.** The dashboard puts the jobs that need you first: an interview within
@@ -22,9 +24,9 @@ does only that, and it only grows when real use shows a need.
 
 ## Try it
 
-I plan to host it on free plans, as a simple experiment. Free hosting has tight limits, so access is
-by invitation, and you can request it on the sign-in page. If it moves to proper hosting, it may
-open to everyone.
+It runs on free plans, as a simple experiment. Free hosting has tight limits, so access is by
+invitation, and you can request it on the sign-in page. If it moves to proper hosting, it may open
+to everyone.
 
 Free plans come with real limits:
 
