@@ -22,13 +22,13 @@ class JobServiceTest {
 
     @Test
     @DisplayName("""
-            Given a wishlist job
+            Given a job without an applied date
             When it moves to Applied without a date
             Then the applied date is today
             """)
     void applyingDefaultsToToday() {
         // Given
-        final Job job = Job.builder().status(JobStatus.WISHLIST).build();
+        final Job job = Job.builder().status(JobStatus.INTERVIEWING).build();
 
         // When
         final Job applied = jobService.withStatus(job, JobStatus.APPLIED, null, TODAY);
@@ -70,20 +70,4 @@ class JobServiceTest {
         assertEquals(EARLIER, reopened.getAppliedDate());
     }
 
-    @Test
-    @DisplayName("""
-            Given an applied job
-            When it moves back to the wishlist
-            Then it has no applied date: a wishlist job hasn't been applied to
-            """)
-    void theWishlistHasNoAppliedDate() {
-        // Given
-        final Job job = Job.builder().status(JobStatus.APPLIED).appliedDate(EARLIER).build();
-
-        // When
-        final Job wishlist = jobService.withStatus(job, JobStatus.WISHLIST, null, TODAY);
-
-        // Then
-        assertNull(wishlist.getAppliedDate());
-    }
 }

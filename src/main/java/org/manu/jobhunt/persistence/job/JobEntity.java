@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.manu.jobhunt.domain.job.Job;
-import org.manu.jobhunt.domain.job.JobSource;
 import org.manu.jobhunt.domain.job.JobStatus;
 import org.manu.jobhunt.domain.job.WorkMode;
 import org.manu.jobhunt.persistence.AuditedEntity;
@@ -41,13 +40,6 @@ public class JobEntity extends AuditedEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private JobSource source;
-
-    @Column(name = "source_note", length = 300)
-    private String sourceNote;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
     private JobStatus status;
 
     @Column(name = "salary_expectation", length = 200)
@@ -74,8 +66,6 @@ public class JobEntity extends AuditedEntity {
         jobUrl = job.getJobUrl();
         location = job.getLocation();
         workMode = job.getWorkMode();
-        source = job.getSource();
-        sourceNote = job.getSourceNote();
         status = job.getStatus();
         salaryExpectation = job.getSalaryExpectation();
         salaryOffer = job.getSalaryOffer();
@@ -93,8 +83,6 @@ public class JobEntity extends AuditedEntity {
                 .jobUrl(jobUrl)
                 .location(location)
                 .workMode(workMode)
-                .source(source)
-                .sourceNote(sourceNote)
                 .status(status)
                 .salaryExpectation(salaryExpectation)
                 .salaryOffer(salaryOffer)

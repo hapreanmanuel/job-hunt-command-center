@@ -5,7 +5,6 @@ import org.manu.jobhunt.application.tracking.command.SaveJobCommand;
 import org.manu.jobhunt.application.tracking.exception.JobNotFoundException;
 import org.manu.jobhunt.domain.job.Job;
 import org.manu.jobhunt.domain.job.JobRepository;
-import org.manu.jobhunt.domain.job.JobSource;
 import org.manu.jobhunt.domain.job.JobStatus;
 import org.manu.jobhunt.domain.job.WorkMode;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ class JobService {
 
     private static final int MAX_NAME_LENGTH = 200;
     private static final int MAX_URL_LENGTH = 1_000;
-    private static final int MAX_SOURCE_NOTE_LENGTH = 300;
     private static final int MAX_DESCRIPTION_LENGTH = 50_000;
 
     private final JobRepository jobRepository;
@@ -51,7 +49,6 @@ class JobService {
         requireMaxLength(command.getJobUrl(), MAX_URL_LENGTH, "jobUrl");
         requireWebAddress(command.getJobUrl(), "jobUrl");
         requireMaxLength(command.getLocation(), MAX_NAME_LENGTH, "location");
-        requireMaxLength(command.getSourceNote(), MAX_SOURCE_NOTE_LENGTH, "sourceNote");
         requireMaxLength(command.getSalaryExpectation(), MAX_NAME_LENGTH, "salaryExpectation");
         requireMaxLength(command.getSalaryOffer(), MAX_NAME_LENGTH, "salaryOffer");
         requireMaxLength(command.getJobDescription(), MAX_DESCRIPTION_LENGTH, "jobDescription");
@@ -59,28 +56,24 @@ class JobService {
 
     /** A new job. Its dates follow the same rules as any other move to that status. */
     Job build(SaveJobCommand command, LocalDate today) {
-        final JobStatus status = command.getStatus() != null ? command.getStatus() : JobStatus.WISHLIST;
+        final JobStatus status = command.getStatus() != null ? command.getStatus() : JobStatus.APPLIED;
         final Job job = withDetails(Job.builder(), command).appliedDate(command.getAppliedDate()).build();
         return withStatus(job, status, status.isClosed() ? command.getClosedDate() : null, today);
     }
 
     /** The given job with the command's details. Its status and closed date stay as they are. */
     Job applied(Job job, SaveJobCommand command) {
-        final LocalDate appliedDate = job.getStatus() == JobStatus.WISHLIST ? null : command.getAppliedDate();
-        return withDetails(job.toBuilder(), command).appliedDate(appliedDate).build();
+        return withDetails(job.toBuilder(), command).appliedDate(command.getAppliedDate()).build();
     }
 
     /**
      * Moves a job to a new status with the date that goes with it, which defaults to today.
-     * A wishlist job has no applied date, and only a closed job has a closed date.
+     * Only a closed job has a closed date.
      */
     Job withStatus(Job job, JobStatus status, LocalDate date, LocalDate today) {
         final Job.JobBuilder updated = job.toBuilder().status(status);
         if (status == JobStatus.APPLIED) {
             updated.appliedDate(requireNonNullElse(date, requireNonNullElse(job.getAppliedDate(), today)));
-        }
-        if (status == JobStatus.WISHLIST) {
-            updated.appliedDate(null);
         }
         return updated.closedDate(status.isClosed() ? requireNonNullElse(date, today) : null).build();
     }
@@ -92,8 +85,6 @@ class JobService {
                 .jobUrl(command.getJobUrl())
                 .location(command.getLocation())
                 .workMode(command.getWorkMode() != null ? command.getWorkMode() : WorkMode.UNKNOWN)
-                .source(command.getSource() != null ? command.getSource() : JobSource.OTHER)
-                .sourceNote(command.getSourceNote())
                 .salaryExpectation(command.getSalaryExpectation())
                 .salaryOffer(command.getSalaryOffer())
                 .jobDescription(command.getJobDescription());

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.manu.jobhunt.api.tracking.dto.JobRequest;
 import org.manu.jobhunt.api.tracking.dto.JobResponse;
 import org.manu.jobhunt.api.tracking.dto.JobStatusRequest;
+import org.manu.jobhunt.api.tracking.dto.NoteRequest;
+import org.manu.jobhunt.api.tracking.dto.NoteResponse;
 import org.manu.jobhunt.api.tracking.dto.RoundRequest;
 import org.manu.jobhunt.api.tracking.dto.RoundResponse;
 import org.manu.jobhunt.application.tracking.TrackingApplication;
@@ -123,6 +125,27 @@ public class TrackingController {
         applicationFacade.deleteRound(id);
     }
 
+    // ---------------------------------------------------------------------
+    // Notes
+    // ---------------------------------------------------------------------
+
+    @GetMapping("/jobs/{jobId}/notes")
+    public List<NoteResponse> listNotes(@PathVariable Long jobId) {
+        return applicationFacade.listNotes(jobId).stream().map(NoteResponse::toDto).toList();
+    }
+
+    @PostMapping("/jobs/{jobId}/notes")
+    @ResponseStatus(HttpStatus.CREATED)
+    public NoteResponse addNote(@PathVariable Long jobId, @RequestBody NoteRequest request) {
+        return NoteResponse.toDto(applicationFacade.addNote(jobId, request.getText()));
+    }
+
+    @DeleteMapping("/notes/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNote(@PathVariable Long id) {
+        applicationFacade.deleteNote(id);
+    }
+
     private static SaveJobCommand toCommand(JobRequest request) {
         return SaveJobCommand.builder()
                 .company(request.getCompany())
@@ -130,8 +153,6 @@ public class TrackingController {
                 .jobUrl(request.getJobUrl())
                 .location(request.getLocation())
                 .workMode(request.getWorkMode())
-                .source(request.getSource())
-                .sourceNote(request.getSourceNote())
                 .status(request.getStatus())
                 .salaryExpectation(request.getSalaryExpectation())
                 .salaryOffer(request.getSalaryOffer())

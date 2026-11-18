@@ -56,4 +56,19 @@ class DataSegregationTest extends AbstractIntegrationTest {
         assertThrows(DataIntegrityViolationException.class, () -> DATABASE.update(
                 "INSERT INTO app.round (owner_id, job_id, round_type) VALUES (?, ?, 'OTHER')", AUTHOR, job));
     }
+
+    @Test
+    @DisplayName("""
+            Given another user's job
+            When a note is attached to it
+            Then the database refuses, through the composite foreign key
+            """)
+    void aNoteCannotBeAttachedToAnotherUsersJob() {
+        // Given
+        final Long job = insertJob(OTHER_USER, "Globex", JobStatus.APPLIED);
+
+        // When / Then
+        assertThrows(DataIntegrityViolationException.class, () -> DATABASE.update(
+                "INSERT INTO app.note (owner_id, job_id, note_text) VALUES (?, ?, 'x')", AUTHOR, job));
+    }
 }

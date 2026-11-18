@@ -16,8 +16,6 @@ public enum Situation {
     FAILED_OPEN,
     /** Two weeks since applying, with no round at all. */
     NO_REPLY,
-    /** On the wishlist: not applied yet. */
-    NOT_APPLIED,
     /** A round is planned, more than 48 hours away. */
     ROUND_LATER,
     /** Nothing to do yet. */

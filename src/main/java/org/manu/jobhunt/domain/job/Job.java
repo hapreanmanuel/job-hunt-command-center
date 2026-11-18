@@ -20,9 +20,6 @@ public class Job {
     private String jobUrl;
     private String location;
     private WorkMode workMode;
-    private JobSource source;
-    /** Free text next to the source, such as who got in touch. */
-    private String sourceNote;
     private JobStatus status;
     /** Free text, because gross or net, period and contract type all matter. */
     private String salaryExpectation;

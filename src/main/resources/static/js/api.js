@@ -7,7 +7,7 @@
   "use strict";
 
   const STATUS_LABELS = {
-    WISHLIST: "Wishlist", APPLIED: "Applied", INTERVIEWING: "Interviewing", OFFER: "Offer",
+    APPLIED: "Applied", INTERVIEWING: "Interviewing", OFFER: "Offer",
     ACCEPTED: "Accepted", DECLINED: "Declined", REJECTED: "Rejected", WITHDRAWN: "Withdrawn", GHOSTED: "Ghosted",
   };
   const CLOSED_STATUSES = ["ACCEPTED", "DECLINED", "REJECTED", "WITHDRAWN", "GHOSTED"];
@@ -154,9 +154,8 @@
       case "NEEDS_DEBRIEF": return "Debrief the " + roundName(round).toLowerCase() + " round from " + relativeDay(round.scheduledAt);
       case "RESULT_OVERDUE": return "No result for " + days + " days";
       case "PASSED_NO_NEXT": return "Passed " + roundName(round).toLowerCase() + ", next round not set";
-      case "FAILED_OPEN": return "Failed " + roundName(round).toLowerCase() + ", job still open";
+      case "FAILED_OPEN": return "Failed " + roundName(round).toLowerCase() + ", application still open";
       case "NO_REPLY": return "No reply for " + days + " days";
-      case "NOT_APPLIED": return "Not applied yet";
       case "ROUND_LATER": return roundName(round) + " " + relativeDay(round.scheduledAt);
       default: return days === 0 ? "Waiting on them" : "Waiting on them, " + days + (days === 1 ? " day" : " days");
     }
@@ -192,7 +191,7 @@
   }
 
   async function deleteData() {
-    const sure = window.confirm("This permanently deletes all your jobs, rounds and debriefs, and signs you out. "
+    const sure = window.confirm("This permanently deletes all your applications, rounds and debriefs, and signs you out. "
       + "It can't be undone. Download your data first if you want a copy.");
     if (!sure) return;
     try {

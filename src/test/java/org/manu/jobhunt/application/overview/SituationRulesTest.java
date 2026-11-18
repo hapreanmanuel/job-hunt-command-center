@@ -147,16 +147,6 @@ class SituationRulesTest {
 
     @Test
     @DisplayName("""
-            Given a wishlist job
-            When it's assessed
-            Then it's not applied yet
-            """)
-    void wishlistIsNotApplied() {
-        assertEquals(Situation.NOT_APPLIED, assess(job(JobStatus.WISHLIST, 0)).getSituation());
-    }
-
-    @Test
-    @DisplayName("""
             Given a round beyond 48 hours
             When the job is assessed
             Then it's for later, and it's the round named

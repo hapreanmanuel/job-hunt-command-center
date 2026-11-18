@@ -63,9 +63,6 @@ final class SituationRules {
                 && (job.getStatus() == JobStatus.APPLIED || job.getStatus() == JobStatus.INTERVIEWING)) {
             return new Assessment(Situation.NO_REPLY, null, days);
         }
-        if (job.getStatus() == JobStatus.WISHLIST) {
-            return new Assessment(Situation.NOT_APPLIED, null, days);
-        }
         if (next != null) {
             return new Assessment(Situation.ROUND_LATER, next, days);
         }

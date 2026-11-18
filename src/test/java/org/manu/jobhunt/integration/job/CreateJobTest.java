@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.manu.jobhunt.integration.AbstractIntegrationTest;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,7 @@ class CreateJobTest extends AbstractIntegrationTest {
     @DisplayName("""
             Given a company and a role
             When a signed-in user sends a POST request
-            Then the job is created with HTTP 201, with defaults for what wasn't given
+            Then the job is created with HTTP 201, applied today, with defaults for what wasn't given
             """)
     void createJobReturnsCreatedWithDefaults() {
         // When
@@ -30,9 +31,9 @@ class CreateJobTest extends AbstractIntegrationTest {
         response.expectStatus().isCreated()
                 .expectBody()
                 .jsonPath("$.company").isEqualTo("Acme")
-                .jsonPath("$.status").isEqualTo("WISHLIST")
-                .jsonPath("$.workMode").isEqualTo("UNKNOWN")
-                .jsonPath("$.source").isEqualTo("OTHER");
+                .jsonPath("$.status").isEqualTo("APPLIED")
+                .jsonPath("$.appliedDate").isEqualTo(LocalDate.now(ZoneOffset.UTC).toString())
+                .jsonPath("$.workMode").isEqualTo("UNKNOWN");
 
         assertEquals(1, countJobs());
     }
@@ -55,40 +56,21 @@ class CreateJobTest extends AbstractIntegrationTest {
 
     @Test
     @DisplayName("""
-            Given a salary expectation, an offer and how the job started
+            Given a salary expectation and an offer
             When the job is created
             Then they're kept as written
             """)
-    void createJobKeepsSalaryAndSourceAsWritten() {
+    void createJobKeepsSalaryAsWritten() {
         // When
         var response = post(restClient, "/api/jobs", Map.of(
-                "company", "Acme", "roleTitle", "Engineer", "source", "RECRUITER",
-                "sourceNote", "A recruiter messaged me", "salaryExpectation", "6,000 EUR net per month, B2B",
+                "company", "Acme", "roleTitle", "Engineer", "salaryExpectation", "6,000 EUR net per month, B2B",
                 "salaryOffer", "5,500 EUR net"));
 
         // Then
         response.expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.source").isEqualTo("RECRUITER")
-                .jsonPath("$.sourceNote").isEqualTo("A recruiter messaged me")
                 .jsonPath("$.salaryExpectation").isEqualTo("6,000 EUR net per month, B2B")
                 .jsonPath("$.salaryOffer").isEqualTo("5,500 EUR net");
-    }
-
-    @Test
-    @DisplayName("""
-            Given a wishlist job with an applied date
-            When it's created
-            Then the date is dropped: a job you haven't applied to has no applied date
-            """)
-    void createJobDropsTheAppliedDateOfAWishlistJob() {
-        // When
-        var response = post(restClient, "/api/jobs", Map.of(
-                "company", "Acme", "roleTitle", "Engineer", "status", "WISHLIST", "appliedDate", "2026-11-01"));
-
-        // Then
-        response.expectStatus().isCreated()
-                .expectBody().jsonPath("$.appliedDate").doesNotExist();
     }
 
     @Test
@@ -99,8 +81,7 @@ class CreateJobTest extends AbstractIntegrationTest {
             """)
     void createJobTakesTheOwnerFromTheSession() {
         // When
-        final Long id = post(restClient, "/api/jobs", Map.of("company", "Acme", "roleTitle", "Engineer"))
-                .expectBody(IdOnly.class).returnResult().getResponseBody().id;
+        final Long id = postForId("/api/jobs", Map.of("company", "Acme", "roleTitle", "Engineer"));
 
         // Then
         assertEquals(AUTHOR.toString(), jobColumn(id, "owner_id"));
@@ -152,10 +133,6 @@ class CreateJobTest extends AbstractIntegrationTest {
         response.expectStatus().isBadRequest();
     }
 
-    private static class IdOnly {
-        public Long id;
-    }
-
     @Test
     @DisplayName("""
             Given a job marked as applied, or as closed, with no date
@@ -170,7 +147,7 @@ class CreateJobTest extends AbstractIntegrationTest {
                 Map.of("company", "Globex", "roleTitle", "Engineer", "status", "REJECTED"));
 
         // Then
-        applied.expectBody().jsonPath("$.appliedDate").isEqualTo(LocalDate.now().toString());
-        rejected.expectBody().jsonPath("$.closedDate").isEqualTo(LocalDate.now().toString());
+        applied.expectBody().jsonPath("$.appliedDate").isEqualTo(LocalDate.now(ZoneOffset.UTC).toString());
+        rejected.expectBody().jsonPath("$.closedDate").isEqualTo(LocalDate.now(ZoneOffset.UTC).toString());
     }
 }

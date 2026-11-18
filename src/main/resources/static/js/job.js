@@ -8,12 +8,8 @@
   } = window.JHCC;
 
   const WORK_MODES = { REMOTE: "Remote", HYBRID: "Hybrid", ONSITE: "Onsite" };
-  const SOURCES = {
-    FOUND_MYSELF: "I found it and applied", RECRUITER: "A recruiter contacted me",
-    REFERRAL: "Someone referred me", OTHER: "Other",
-  };
 
-  const PHASES = ["WISHLIST", "APPLIED", "INTERVIEWING", "OFFER"];
+  const PHASES = ["APPLIED", "INTERVIEWING", "OFFER"];
 
   const jobId = window.location.pathname.split("/").pop();
   let job = null;
@@ -23,14 +19,15 @@
 
   async function load() {
     try {
-      const [loadedJob, rounds, loadedSituation] = await Promise.all([
+      const [loadedJob, rounds, loadedSituation, notes] = await Promise.all([
         api.get("/api/jobs/" + jobId),
         api.get("/api/jobs/" + jobId + "/rounds"),
         api.get("/api/jobs/" + jobId + "/situation"),
+        api.get("/api/jobs/" + jobId + "/notes"),
       ]);
       job = loadedJob;
       situation = loadedSituation;
-      render(rounds);
+      render(rounds, notes);
       document.getElementById("job").hidden = false;
     } catch (err) {
       if (err.status === 404) document.getElementById("not-found").hidden = false;
@@ -38,7 +35,7 @@
     }
   }
 
-  function render(rounds) {
+  function render(rounds, notes) {
     document.title = job.company + " - Job Hunt Command Center";
     document.getElementById("job-dot").className = "dot job-" + job.colorIndex;
     document.getElementById("job-company").textContent = job.company;
@@ -48,14 +45,15 @@
     renderStepper();
     renderNextStep();
     renderTimeline(rounds);
+    renderNotes(notes);
     renderListing();
     renderDetails();
   }
 
   function renderStepper() {
     const closed = CLOSED_STATUSES.includes(job.status);
-    const steps = ["Wishlist", "Applied", "Interviewing", "Offer", closed ? STATUS_LABELS[job.status] : "Outcome"];
-    const current = closed ? 4 : PHASES.indexOf(job.status);
+    const steps = ["Applied", "Interviewing", "Offer", closed ? STATUS_LABELS[job.status] : "Outcome"];
+    const current = closed ? 3 : PHASES.indexOf(job.status);
     const stepper = document.getElementById("stepper");
     stepper.className = "stepper job-" + job.colorIndex;
     stepper.replaceChildren(...steps.map((text, i) =>
@@ -82,7 +80,6 @@
         return { text: line + ". Chase them, or update the status.", ...updateStatus };
       case "PASSED_NO_NEXT": return { text: line + ".", label: "Add round", run: () => openRound(null) };
       case "FAILED_OPEN": return { text: line + ".", ...updateStatus };
-      case "NOT_APPLIED": return { text: "You haven't applied yet.", ...updateStatus };
       default: return { text: line + ". Nothing needed from you." };
     }
   }
@@ -138,11 +135,46 @@
     timeline.replaceChildren(...items);
   }
 
+  function renderNotes(notes) {
+    const list = document.getElementById("notes");
+    if (notes.length === 0) {
+      list.replaceChildren(el("p", { class: "muted", text: "No notes yet." }));
+      return;
+    }
+    list.replaceChildren(...notes.map((note) => el("article", { class: "note" },
+      el("div", { class: "note-head" },
+        el("span", { class: "muted", text: formatDateTime(note.createdAt) }),
+        el("button", { type: "button", class: "icon", "aria-label": "Delete note", title: "Delete note", text: "×", onclick: () => deleteNote(note) })),
+      el("div", { class: "prewrap", text: note.text }))));
+  }
+
+  async function addNote(e) {
+    e.preventDefault();
+    const form = e.target;
+    try {
+      await api.post("/api/jobs/" + jobId + "/notes", { text: form.elements.text.value });
+      document.getElementById("note-dialog").close();
+      load();
+    } catch (err) {
+      showError(err);
+    }
+  }
+
+  async function deleteNote(note) {
+    if (!window.confirm("Delete this note?")) return;
+    try {
+      await api.del("/api/notes/" + note.id);
+      load();
+    } catch (err) {
+      showError(err);
+    }
+  }
+
   function renderListing() {
     const link = document.getElementById("job-link");
     link.hidden = !job.jobUrl;
     if (job.jobUrl) link.setAttribute("href", job.jobUrl);
-    document.getElementById("job-listing").textContent = job.jobDescription || "No listing saved yet. Add it with Edit job.";
+    document.getElementById("job-listing").textContent = job.jobDescription || "No listing saved yet. Add it with Edit application.";
   }
 
   function showListing() {
@@ -157,7 +189,7 @@
     const rows = [
       ["Salary expectation", job.salaryExpectation], ["Salary offered", job.salaryOffer],
       ["Location", job.location], ["Work mode", WORK_MODES[job.workMode]],
-      ["How it started", SOURCES[job.source]], ["Start details", job.sourceNote], ["Added", formatDate(job.createdAt)],
+      ["Added", formatDate(job.createdAt)],
     ].filter(([, value]) => value);
     document.getElementById("job-details").replaceChildren(
       ...rows.flatMap(([term, value]) => [el("dt", { text: term }), el("dd", { text: value })]));
@@ -294,9 +326,8 @@
   function openEdit() {
     const form = document.getElementById("edit-form");
     form.reset();
-    ["company", "roleTitle", "location", "workMode", "source", "sourceNote", "appliedDate", "salaryExpectation", "salaryOffer", "jobUrl", "jobDescription"]
+    ["company", "roleTitle", "location", "workMode", "appliedDate", "salaryExpectation", "salaryOffer", "jobUrl", "jobDescription"]
       .forEach((name) => { form.elements[name].value = job[name] == null ? "" : job[name]; });
-    form.elements.appliedDate.disabled = job.status === "WISHLIST";
     document.getElementById("edit-dialog").showModal();
   }
 
@@ -306,7 +337,7 @@
     try {
       await api.put("/api/jobs/" + jobId, values);
       document.getElementById("edit-dialog").close();
-      toast("Job saved");
+      toast("Application saved");
       load();
     } catch (err) {
       showError(err);
@@ -316,7 +347,7 @@
   async function toggleArchive() {
     try {
       await api.post("/api/jobs/" + jobId + (job.archived ? "/unarchive" : "/archive"));
-      toast(job.archived ? "Job unarchived" : "Job archived");
+      toast(job.archived ? "Application unarchived" : "Application archived");
       load();
     } catch (err) {
       showError(err);
@@ -324,7 +355,7 @@
   }
 
   async function deleteJob() {
-    if (!window.confirm("Delete this job and all its rounds and debriefs? This can't be undone.")) return;
+    if (!window.confirm("Delete this application and all its rounds and debriefs? This can't be undone.")) return;
     try {
       await api.del("/api/jobs/" + jobId);
       window.location.href = "/";
@@ -354,6 +385,15 @@
     document.getElementById("edit-form").addEventListener("submit", saveEdit);
     document.getElementById("archive-job").addEventListener("click", toggleArchive);
     document.getElementById("delete-job").addEventListener("click", deleteJob);
+    document.getElementById("add-note").addEventListener("click", () => {
+      document.getElementById("note-form").reset();
+      document.getElementById("note-dialog").showModal();
+    });
+    const noteForm = document.getElementById("note-form");
+    noteForm.addEventListener("submit", addNote);
+    noteForm.elements.text.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) noteForm.requestSubmit();
+    });
     load();
   });
 })();

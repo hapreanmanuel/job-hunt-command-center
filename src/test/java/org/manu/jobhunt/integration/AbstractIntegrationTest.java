@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -66,7 +67,7 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
 
     @AfterEach
     void cleanDatabase() {
-        DATABASE.execute("TRUNCATE TABLE app.round, app.job, app.app_user, app.spring_session RESTART IDENTITY CASCADE");
+        DATABASE.execute("TRUNCATE TABLE app.note, app.round, app.job, app.app_user, app.spring_session RESTART IDENTITY CASCADE");
     }
 
     // ---------------------------------------------------------------------
@@ -84,7 +85,7 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
         // Spring Session's cookie holds the session id, Base64-encoded.
         final String cookie = Base64.getEncoder().encodeToString(sessionId.getBytes(StandardCharsets.UTF_8));
 
-        final Map<String, String> csrf = baseRestClient
+        final Map<String, String> csrf = Objects.requireNonNull(baseRestClient
                 .get()
                 .uri("/api/csrf")
                 .cookie(SESSION_COOKIE, cookie)
@@ -93,7 +94,7 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
                 .expectBody(new ParameterizedTypeReference<Map<String, String>>() {
                 })
                 .returnResult()
-                .getResponseBody();
+                .getResponseBody());
 
         return baseRestClient.mutate()
                 .defaultCookie(SESSION_COOKIE, cookie)
@@ -125,6 +126,17 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
         return client.put().uri(path).contentType(MediaType.APPLICATION_JSON).body(body).exchange();
     }
 
+    /** Sends a POST that must create something, and returns the new id. */
+    protected Long postForId(String path, Object body) {
+        final Created created = post(restClient, path, body)
+                .expectStatus().isCreated()
+                .expectBody(Created.class).returnResult().getResponseBody();
+        return Objects.requireNonNull(created, "response body").id();
+    }
+
+    private record Created(Long id) {
+    }
+
     // ---------------------------------------------------------------------
     // Arranging data
     // ---------------------------------------------------------------------
@@ -134,7 +146,7 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
     }
 
     protected Long insertJob(UUID owner, String company, JobStatus status) {
-        return insertJob(owner, company, status, status == JobStatus.WISHLIST ? null : LocalDate.now());
+        return insertJob(owner, company, status, LocalDate.now());
     }
 
     protected Long insertJob(UUID owner, String company, JobStatus status, LocalDate appliedDate) {
@@ -162,6 +174,12 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
                 scheduledAt == null ? null : Timestamp.from(scheduledAt), outcome.name());
     }
 
+    protected Long insertNote(UUID owner, Long jobId, String text) {
+        return DATABASE.queryForObject(
+                "INSERT INTO app.note (owner_id, job_id, note_text) VALUES (?, ?, ?) RETURNING id",
+                Long.class, owner, jobId, text);
+    }
+
     // ---------------------------------------------------------------------
     // Checking data
     // ---------------------------------------------------------------------
@@ -180,5 +198,9 @@ public abstract class AbstractIntegrationTest extends AbstractDatabaseTest {
 
     protected int countRounds() {
         return DATABASE.queryForObject("SELECT count(*) FROM app.round", Integer.class);
+    }
+
+    protected int countNotes() {
+        return DATABASE.queryForObject("SELECT count(*) FROM app.note", Integer.class);
     }
 }

@@ -26,6 +26,7 @@ class DeleteUserTest extends AbstractIntegrationTest {
         // Given
         final Long job = insertJob(AUTHOR, "Acme", JobStatus.INTERVIEWING);
         insertRound(AUTHOR, job, RoundType.FINAL, Instant.now());
+        insertNote(AUTHOR, job, "A note");
         final RestTestClient secondBrowser = clientSignedInAs(AUTHOR);
 
         // When
@@ -35,6 +36,7 @@ class DeleteUserTest extends AbstractIntegrationTest {
         response.expectStatus().isNoContent();
         assertEquals(0, countJobs());
         assertEquals(0, countRounds());
+        assertEquals(0, countNotes());
         assertEquals(0, count("app.app_user WHERE id = '%s'".formatted(AUTHOR)));
         assertEquals(0, count("app.spring_session WHERE principal_name = '%s'".formatted(AUTHOR)));
         restClient.get().uri("/api/jobs").exchange().expectStatus().isUnauthorized();

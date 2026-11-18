@@ -5,16 +5,17 @@
   const { api, el, dateKey, formatDate, formatDateTime, roundName, situationText, showError, closeOnCancel, formValues, STATUS_LABELS } = window.JHCC;
 
   const THEIR_MOVE = ["ROUND_LATER", "WAITING"];
-  const PHASES = ["WISHLIST", "APPLIED", "INTERVIEWING", "OFFER"];
+  // Steps taken: one bar once applied.
+  const STEPS = ["APPLIED", "INTERVIEWING", "OFFER"];
 
   function text(id, value) { document.getElementById(id).textContent = value; }
 
   function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
 
   function phaseBar(job) {
-    const reached = PHASES.indexOf(job.status);
+    const reached = STEPS.indexOf(job.status);
     return el("span", { class: "phase-bar", "aria-hidden": "true" },
-      PHASES.map((_, i) => el("span", { class: i <= reached ? "on" : "" })));
+      STEPS.map((_, i) => el("span", { class: i <= reached ? "on" : "" })));
   }
 
   function card(summary) {
@@ -44,7 +45,7 @@
   function renderStats(home, mine) {
     text("stat-move", String(mine.length));
     document.querySelector(".stat-move").classList.toggle("active", mine.length > 0);
-    text("stat-move-note", mine.length === 0 ? "Nothing needs you" : mine.length === 1 ? "job needs you" : "jobs need you");
+    text("stat-move-note", mine.length === 0 ? "Nothing needs you" : mine.length === 1 ? "application needs you" : "applications need you");
     text("stat-active", String(home.active.length));
     text("stat-active-note", home.closed.length ? home.closed.length + " closed" : "None closed yet");
 
@@ -68,7 +69,7 @@
       renderStats(home, mine);
       const jobs = document.getElementById("jobs");
       if (home.active.length === 0) {
-        jobs.replaceChildren(el("p", { class: "empty", text: "Add your first job to start tracking it." }));
+        jobs.replaceChildren(el("p", { class: "empty", text: "Add your first application to start tracking it." }));
       } else {
         jobs.replaceChildren(...group("Your move", mine), ...group("Waiting on them", waiting));
       }
@@ -89,20 +90,15 @@
     document.getElementById("add-job").addEventListener("click", () => {
       form.reset();
       form.elements.appliedDate.value = dateKey(new Date());
-      form.elements.appliedDate.disabled = false;
       dialog.showModal();
-    });
-
-    form.elements.status.addEventListener("change", () => {
-      const wishlist = form.elements.status.value === "WISHLIST";
-      form.elements.appliedDate.disabled = wishlist;
-      form.elements.appliedDate.value = wishlist ? "" : dateKey(new Date());
     });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       try {
-        const job = await api.post("/api/jobs", formValues(form));
+        const { notes, ...values } = formValues(form);
+        const job = await api.post("/api/jobs", values);
+        if (notes && notes.trim()) await api.post("/api/jobs/" + job.id + "/notes", { text: notes });
         window.location.href = "/jobs/" + job.id;
       } catch (err) {
         showError(err);

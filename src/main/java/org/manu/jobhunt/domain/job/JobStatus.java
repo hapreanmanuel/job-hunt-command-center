@@ -2,7 +2,6 @@ package org.manu.jobhunt.domain.job;
 
 /** The phases of a job. Each closed status can be reached from any phase. */
 public enum JobStatus {
-    WISHLIST,
     APPLIED,
     INTERVIEWING,
     OFFER,

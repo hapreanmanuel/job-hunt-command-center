@@ -3,7 +3,6 @@ package org.manu.jobhunt.application.tracking.command;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.manu.jobhunt.domain.job.JobSource;
 import org.manu.jobhunt.domain.job.JobStatus;
 import org.manu.jobhunt.domain.job.WorkMode;
 
@@ -20,10 +19,7 @@ public class SaveJobCommand {
     private String location;
     /** Optional: defaults to UNKNOWN. */
     private WorkMode workMode;
-    /** Optional: defaults to OTHER. */
-    private JobSource source;
-    private String sourceNote;
-    /** Only when creating, and optional: defaults to WISHLIST. */
+    /** Only when creating, and optional: defaults to APPLIED. */
     private JobStatus status;
     private String salaryExpectation;
     private String salaryOffer;

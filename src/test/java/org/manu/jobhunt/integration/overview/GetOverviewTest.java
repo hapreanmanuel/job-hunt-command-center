@@ -24,7 +24,7 @@ class GetOverviewTest extends AbstractIntegrationTest {
     void getOverviewSortsByUrgencyAndSeparatesClosedJobs() {
         // Given
         final Long waiting = insertJob(AUTHOR, "Waiting", JobStatus.APPLIED);
-        final Long wishlist = insertJob(AUTHOR, "Wishlist", JobStatus.WISHLIST);
+        final Long silent = insertJob(AUTHOR, "Silent", JobStatus.APPLIED, LocalDate.now().minusDays(20));
         final Long offer = insertJob(AUTHOR, "Offer", JobStatus.OFFER);
         final Long soon = insertJob(AUTHOR, "Soon", JobStatus.INTERVIEWING);
         insertRound(AUTHOR, soon, RoundType.TECHNICAL, Instant.now().plus(Duration.ofHours(5)));
@@ -41,7 +41,7 @@ class GetOverviewTest extends AbstractIntegrationTest {
                 .jsonPath("$.active[0].situation.situation").isEqualTo("ROUND_SOON")
                 .jsonPath("$.active[0].situation.round.type").isEqualTo("TECHNICAL")
                 .jsonPath("$.active[1].job.id").isEqualTo(offer)
-                .jsonPath("$.active[2].job.id").isEqualTo(wishlist)
+                .jsonPath("$.active[2].job.id").isEqualTo(silent)
                 .jsonPath("$.active[3].job.id").isEqualTo(waiting)
                 .jsonPath("$.closed.length()").isEqualTo(1)
                 .jsonPath("$.closed[0].company").isEqualTo("Closed");

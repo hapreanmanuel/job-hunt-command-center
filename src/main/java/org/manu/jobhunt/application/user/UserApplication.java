@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.manu.jobhunt.application.common.CurrentUserProvider;
 import org.manu.jobhunt.application.user.command.SignInCommand;
 import org.manu.jobhunt.domain.job.JobRepository;
+import org.manu.jobhunt.domain.note.NoteRepository;
 import org.manu.jobhunt.domain.round.RoundRepository;
 import org.manu.jobhunt.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class UserApplication {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final RoundRepository roundRepository;
+    private final NoteRepository noteRepository;
     private final CurrentUserProvider userProvider;
 
     /** Decides whether this person may sign in, registers them if they're new, and returns who they are. */
@@ -48,7 +50,8 @@ public class UserApplication {
     @Transactional(readOnly = true)
     public UserData export() {
         final UUID ownerId = userProvider.userId();
-        return new UserData(Instant.now(), jobRepository.findAll(ownerId, true), roundRepository.findAll(ownerId, true));
+        return new UserData(Instant.now(), jobRepository.findAll(ownerId, true), roundRepository.findAll(ownerId, true),
+                noteRepository.findAll(ownerId));
     }
 
     /** Removes the current user for good, with all their data. Signing in again starts empty. */

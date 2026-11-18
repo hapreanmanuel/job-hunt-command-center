@@ -7,7 +7,7 @@
   <span id="today" class="topbar-date"></span>
   <span class="topbar-actions">
     <span th:replace="~{layout :: account}"></span>
-    <button type="button" id="add-job" class="primary">+ Add job</button>
+    <button type="button" id="add-job" class="primary">+ Add application</button>
   </span>
 </header>
 
@@ -19,7 +19,7 @@
       <span id="stat-move-note" class="stat-note"></span>
     </div>
     <div class="stat">
-      <span class="stat-label">Active jobs</span>
+      <span class="stat-label">Active applications</span>
       <strong id="stat-active" class="stat-value">-</strong>
       <span id="stat-active-note" class="stat-note"></span>
     </div>
@@ -64,35 +64,19 @@
 
 <dialog id="job-dialog">
   <form id="job-form" method="dialog">
-    <h2>Add job</h2>
+    <h2>Add application</h2>
     <div class="form-grid">
       <label>Company <input name="company" required maxlength="200" /></label>
       <label>Role <input name="roleTitle" required maxlength="200" /></label>
-      <label>Status
-        <select name="status">
-          <option value="WISHLIST">Wishlist</option>
-          <option value="APPLIED" selected>Applied</option>
-          <option value="INTERVIEWING">Interviewing</option>
-          <option value="OFFER">Offer</option>
-        </select>
-      </label>
       <label>Applied date <input type="date" name="appliedDate" /></label>
-      <label>How it started
-        <select name="source">
-          <option value="FOUND_MYSELF">I found it and applied</option>
-          <option value="RECRUITER">A recruiter contacted me</option>
-          <option value="REFERRAL">Someone referred me</option>
-          <option value="OTHER">Other</option>
-        </select>
-      </label>
-      <label>How it started: details <input name="sourceNote" maxlength="300" placeholder="Applied on their careers page" /></label>
+      <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
     </div>
-    <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
     <label>Link to the posting <input type="url" name="jobUrl" maxlength="1000" placeholder="https://" /></label>
+    <label>Notes <textarea name="notes" rows="3" maxlength="20000" placeholder="Only posted on LinkedIn, not on their website"></textarea></label>
     <label>Job listing <textarea name="jobDescription" rows="10" maxlength="50000" placeholder="Paste the listing exactly as written"></textarea></label>
     <div class="dialog-actions">
       <button type="button" data-close>Cancel</button>
-      <button type="submit" class="primary">Save job</button>
+      <button type="submit" class="primary">Save application</button>
     </div>
   </form>
 </dialog>

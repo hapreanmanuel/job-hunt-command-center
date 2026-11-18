@@ -7,6 +7,8 @@ import org.manu.jobhunt.application.tracking.command.SaveRoundCommand;
 import org.manu.jobhunt.domain.job.Job;
 import org.manu.jobhunt.domain.job.JobRepository;
 import org.manu.jobhunt.domain.job.JobStatus;
+import org.manu.jobhunt.domain.note.Note;
+import org.manu.jobhunt.domain.note.NoteRepository;
 import org.manu.jobhunt.domain.round.Round;
 import org.manu.jobhunt.domain.round.RoundRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ import java.util.List;
 import static org.manu.jobhunt.application.common.Validations.requireNonNull;
 
 /**
- * Entry point of the tracking feature: the only class the API layer uses for jobs and rounds.
+ * Entry point of the tracking feature: the only class the API layer uses for jobs, rounds and notes.
  * <p>
  * Each use case runs its steps in order: find (404), then validate (400), then write. It's the
  * only place that reads the current user, and every repository call carries it. Reading another
@@ -32,8 +34,10 @@ public class TrackingApplication {
 
     private final JobService jobService;
     private final RoundService roundService;
+    private final NoteService noteService;
     private final JobRepository jobRepository;
     private final RoundRepository roundRepository;
+    private final NoteRepository noteRepository;
     private final CurrentUserProvider userProvider;
 
     // ---------------------------------------------------------------------
@@ -120,7 +124,7 @@ public class TrackingApplication {
     public Round addRound(Long jobId, SaveRoundCommand command) {
         final Job job = jobService.requireJob(jobId, userProvider.userId());
         roundService.validate(command);
-        if (job.getStatus() == JobStatus.WISHLIST || job.getStatus() == JobStatus.APPLIED) {
+        if (job.getStatus() == JobStatus.APPLIED) {
             jobRepository.update(job.toBuilder().status(JobStatus.INTERVIEWING).build(), userProvider.userId());
         }
         return roundRepository.save(roundService.build(command), jobId, userProvider.userId());
@@ -136,6 +140,27 @@ public class TrackingApplication {
     public void deleteRound(Long id) {
         roundService.requireRound(id, userProvider.userId());
         roundRepository.deleteById(id, userProvider.userId());
+    }
+
+    // ---------------------------------------------------------------------
+    // Notes
+    // ---------------------------------------------------------------------
+
+    @Transactional(readOnly = true)
+    public List<Note> listNotes(Long jobId) {
+        jobService.requireExists(jobId, userProvider.userId());
+        return noteRepository.findByJobId(jobId, userProvider.userId());
+    }
+
+    public Note addNote(Long jobId, String text) {
+        jobService.requireExists(jobId, userProvider.userId());
+        noteService.validate(text);
+        return noteRepository.save(noteService.build(text), jobId, userProvider.userId());
+    }
+
+    public void deleteNote(Long id) {
+        noteService.requireExists(id, userProvider.userId());
+        noteRepository.deleteById(id, userProvider.userId());
     }
 
     private static LocalDate today() {

@@ -23,17 +23,13 @@ class TrackAnInterviewJourneyTest extends AbstractIntegrationTest {
             """)
     void aJobMovesThroughTheLoop() {
         // Add a job
-        final Long jobId = post(restClient, "/api/jobs", Map.of("company", "Acme", "roleTitle", "Engineer", "status", "APPLIED"))
-                .expectStatus().isCreated()
-                .expectBody(Created.class).returnResult().getResponseBody().id;
+        final Long jobId = postForId("/api/jobs", Map.of("company", "Acme", "roleTitle", "Engineer"));
         assertSituation(jobId, "WAITING");
 
         // Schedule a round for tomorrow
         final Instant tomorrow = Instant.now().plus(Duration.ofDays(1));
-        final Long roundId = post(restClient, "/api/jobs/" + jobId + "/rounds",
-                Map.of("type", "SCREENING", "scheduledAt", tomorrow.toString()))
-                .expectStatus().isCreated()
-                .expectBody(Created.class).returnResult().getResponseBody().id;
+        final Long roundId = postForId("/api/jobs/" + jobId + "/rounds",
+                Map.of("type", "SCREENING", "scheduledAt", tomorrow.toString()));
         assertEquals("INTERVIEWING", jobColumn(jobId, "status"));
         assertSituation(jobId, "ROUND_SOON");
 
@@ -55,9 +51,5 @@ class TrackAnInterviewJourneyTest extends AbstractIntegrationTest {
         restClient.get().uri("/api/jobs/" + jobId + "/situation").exchange()
                 .expectStatus().isOk()
                 .expectBody().jsonPath("$.situation").isEqualTo(expected);
-    }
-
-    private static class Created {
-        public Long id;
     }
 }

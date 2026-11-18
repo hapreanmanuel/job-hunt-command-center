@@ -15,7 +15,7 @@ class ExportDataTest extends AbstractIntegrationTest {
 
     @Test
     @DisplayName("""
-            Given jobs and rounds from two users, one job archived
+            Given jobs, rounds and notes from two users, one job archived
             When one of them downloads their data
             Then it holds everything of theirs, archived included, and nothing of the other's
             """)
@@ -23,11 +23,13 @@ class ExportDataTest extends AbstractIntegrationTest {
         // Given
         final Long job = insertJob(AUTHOR, "Acme", JobStatus.INTERVIEWING);
         insertRound(AUTHOR, job, RoundType.FINAL, Instant.now());
+        insertNote(AUTHOR, job, "Mine");
         final Long archived = insertJob(AUTHOR, "Archived", JobStatus.APPLIED);
         insertRound(AUTHOR, archived, RoundType.SCREENING, Instant.now());
         DATABASE.update("UPDATE app.job SET archived = true WHERE id = ?", archived);
         final Long other = insertJob(OTHER_USER, "Globex", JobStatus.INTERVIEWING);
         insertRound(OTHER_USER, other, RoundType.FINAL, Instant.now());
+        insertNote(OTHER_USER, other, "Theirs");
 
         // When
         var response = restClient.get().uri("/api/user/export").exchange();
@@ -36,6 +38,7 @@ class ExportDataTest extends AbstractIntegrationTest {
         response.expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.jobs.length()").isEqualTo(2)
-                .jsonPath("$.rounds.length()").isEqualTo(2);
+                .jsonPath("$.rounds.length()").isEqualTo(2)
+                .jsonPath("$.notes.length()").isEqualTo(1);
     }
 }

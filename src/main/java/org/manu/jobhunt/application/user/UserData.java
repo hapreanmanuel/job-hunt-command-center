@@ -3,6 +3,7 @@ package org.manu.jobhunt.application.user;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.manu.jobhunt.domain.job.Job;
+import org.manu.jobhunt.domain.note.Note;
 import org.manu.jobhunt.domain.round.Round;
 
 import java.time.Instant;
@@ -16,4 +17,5 @@ public class UserData {
     private final Instant exportedAt;
     private final List<Job> jobs;
     private final List<Round> rounds;
+    private final List<Note> notes;
 }

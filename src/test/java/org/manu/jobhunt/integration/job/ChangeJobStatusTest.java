@@ -6,6 +6,7 @@ import org.manu.jobhunt.domain.job.JobStatus;
 import org.manu.jobhunt.integration.AbstractIntegrationTest;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,38 +55,20 @@ class ChangeJobStatusTest extends AbstractIntegrationTest {
 
     @Test
     @DisplayName("""
-            Given a wishlist job
+            Given a job without an applied date
             When it moves to applied without a date
             Then the applied date defaults to today
             """)
     void changeStatusDefaultsTheAppliedDateToToday() {
         // Given
-        final Long id = insertJob(AUTHOR, "Acme", JobStatus.WISHLIST);
+        final Long id = insertJob(AUTHOR, "Acme", JobStatus.INTERVIEWING, null);
 
         // When
         var response = post(restClient, "/api/jobs/" + id + "/status", Map.of("status", "APPLIED"));
 
         // Then
         response.expectStatus().isOk();
-        assertEquals(LocalDate.now().toString(), jobColumn(id, "applied_date"));
-    }
-
-    @Test
-    @DisplayName("""
-            Given an applied job
-            When it moves back to the wishlist
-            Then the applied date is cleared
-            """)
-    void changeStatusClearsTheAppliedDateOnTheWishlist() {
-        // Given
-        final Long id = insertJob(AUTHOR, "Acme", JobStatus.APPLIED);
-
-        // When
-        var response = post(restClient, "/api/jobs/" + id + "/status", Map.of("status", "WISHLIST"));
-
-        // Then
-        response.expectStatus().isOk();
-        assertNull(jobColumn(id, "applied_date"));
+        assertEquals(LocalDate.now(ZoneOffset.UTC).toString(), jobColumn(id, "applied_date"));
     }
 
     @Test

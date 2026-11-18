@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{layout :: head('Job - Job Hunt Command Center')}"></head>
+<head th:replace="~{layout :: head('Application - Job Hunt Command Center')}"></head>
 <body>
 
 <header class="topbar">
@@ -12,7 +12,7 @@
 </header>
 
 <main class="job-page">
-  <p id="not-found" class="empty" hidden>This job doesn't exist. <a href="/">Back to Home</a></p>
+  <p id="not-found" class="empty" hidden>This application doesn't exist. <a href="/">Back to Home</a></p>
 
   <div id="job" class="job-page-inner" hidden>
     <div class="job-title">
@@ -41,9 +41,17 @@
           <div id="timeline" class="timeline"></div>
         </section>
 
+        <section class="card" aria-labelledby="notes-title">
+          <div class="card-head">
+            <h2 id="notes-title">Notes</h2>
+            <button type="button" id="add-note">+ Add note</button>
+          </div>
+          <div id="notes" class="notes"></div>
+        </section>
+
         <div class="job-actions">
           <button type="button" id="update-status">Update status</button>
-          <button type="button" id="edit-job">Edit job</button>
+          <button type="button" id="edit-job">Edit application</button>
           <button type="button" id="archive-job">Archive</button>
           <button type="button" id="delete-job" class="danger">Delete</button>
         </div>
@@ -81,6 +89,17 @@
       <button type="button" id="round-delete" class="danger left" hidden>Delete round</button>
       <button type="button" data-close>Cancel</button>
       <button type="submit" class="primary">Save round</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="note-dialog">
+  <form id="note-form" method="dialog">
+    <h2>Add note</h2>
+    <label>Note <textarea name="text" rows="5" maxlength="20000" required></textarea></label>
+    <div class="dialog-actions">
+      <button type="button" data-close>Cancel</button>
+      <button type="submit" class="primary">Save note</button>
     </div>
   </form>
 </dialog>
@@ -124,7 +143,7 @@
 
 <dialog id="edit-dialog">
   <form id="edit-form" method="dialog">
-    <h2>Edit job</h2>
+    <h2>Edit application</h2>
     <div class="form-grid">
       <label>Company <input name="company" required maxlength="200" /></label>
       <label>Role <input name="roleTitle" required maxlength="200" /></label>
@@ -138,16 +157,7 @@
         </select>
       </label>
       <label>Applied date <input type="date" name="appliedDate" /></label>
-      <label>How it started
-        <select name="source">
-          <option value="FOUND_MYSELF">I found it and applied</option>
-          <option value="RECRUITER">A recruiter contacted me</option>
-          <option value="REFERRAL">Someone referred me</option>
-          <option value="OTHER">Other</option>
-        </select>
-      </label>
     </div>
-    <label>How it started: details <input name="sourceNote" maxlength="300" placeholder="Applied on their careers page" /></label>
     <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
     <label>Salary offered <input name="salaryOffer" maxlength="200" /></label>
     <label>Link to the posting <input type="url" name="jobUrl" maxlength="1000" placeholder="https://" /></label>

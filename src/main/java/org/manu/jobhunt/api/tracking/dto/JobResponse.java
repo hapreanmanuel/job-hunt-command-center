@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.manu.jobhunt.domain.job.Job;
-import org.manu.jobhunt.domain.job.JobSource;
 import org.manu.jobhunt.domain.job.JobStatus;
 import org.manu.jobhunt.domain.job.WorkMode;
 
@@ -24,8 +23,6 @@ public class JobResponse {
     private String jobUrl;
     private String location;
     private WorkMode workMode;
-    private JobSource source;
-    private String sourceNote;
     private JobStatus status;
     private String salaryExpectation;
     private String salaryOffer;
@@ -45,8 +42,6 @@ public class JobResponse {
                 .jobUrl(job.getJobUrl())
                 .location(job.getLocation())
                 .workMode(job.getWorkMode())
-                .source(job.getSource())
-                .sourceNote(job.getSourceNote())
                 .status(job.getStatus())
                 .salaryExpectation(job.getSalaryExpectation())
                 .salaryOffer(job.getSalaryOffer())
