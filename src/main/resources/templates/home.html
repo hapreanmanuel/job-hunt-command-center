@@ -68,6 +68,15 @@
     <div class="form-grid">
       <label>Company <input name="company" required maxlength="200" /></label>
       <label>Role <input name="roleTitle" required maxlength="200" /></label>
+      <label>Location <input name="location" maxlength="200" /></label>
+      <label>Work mode
+        <select name="workMode">
+          <option value="UNKNOWN">Unknown</option>
+          <option value="REMOTE">Remote</option>
+          <option value="HYBRID">Hybrid</option>
+          <option value="ONSITE">Onsite</option>
+        </select>
+      </label>
       <label>Applied date <input type="date" name="appliedDate" /></label>
       <label>Salary expectation <input name="salaryExpectation" maxlength="200" placeholder="6,000 EUR net per month, B2B" /></label>
     </div>
