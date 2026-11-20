@@ -204,15 +204,27 @@
     document.getElementById("round-title").textContent = round ? "Edit round" : "Add round";
     document.getElementById("round-delete").hidden = !round;
     form.elements.type.value = round ? round.type : "SCREENING";
-    form.elements.scheduledAt.value = round ? toLocalInput(round.scheduledAt) : "";
-    form.elements.outcome.value = round ? round.outcome : "PENDING";
+    const local = round ? toLocalInput(round.scheduledAt) : "";
+    form.elements.date.value = local.slice(0, 10);
+    fillTimes(local ? local.slice(11) : "10:00");
     updateRoundDateLabel();
     document.getElementById("round-dialog").showModal();
   }
 
+  /** Quarter-hour steps; a saved time off the grid is kept as its own option. */
+  function fillTimes(selected) {
+    const times = [];
+    for (let m = 0; m < 24 * 60; m += 15) times.push(String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"));
+    if (!times.includes(selected)) times.push(selected);
+    times.sort();
+    const select = document.getElementById("round-time");
+    select.replaceChildren(...times.map((t) => el("option", { value: t, text: t })));
+    select.value = selected;
+  }
+
   function updateRoundDateLabel() {
     const takeHome = document.getElementById("round-type").value === "TAKE_HOME";
-    document.getElementById("round-date-label").textContent = takeHome ? "Due date" : "Date and time";
+    document.getElementById("round-date-label").textContent = takeHome ? "Due date" : "Date";
   }
 
   function roundBody(round) {
@@ -225,14 +237,15 @@
 
   async function saveRound(e) {
     e.preventDefault();
-    const values = formValues(e.target);
-    const scheduledAt = values.scheduledAt ? new Date(values.scheduledAt).toISOString() : null;
+    const { type, date, time, note } = formValues(e.target);
+    const scheduledAt = date ? new Date(date + "T" + time).toISOString() : null;
     try {
       if (editingRound) {
-        await api.put("/api/rounds/" + editingRound.id, { ...roundBody(editingRound), ...values, scheduledAt });
+        await api.put("/api/rounds/" + editingRound.id, { ...roundBody(editingRound), type, scheduledAt });
       } else {
-        await api.post("/api/jobs/" + jobId + "/rounds", { ...values, scheduledAt });
+        await api.post("/api/jobs/" + jobId + "/rounds", { type, scheduledAt });
       }
+      if (note && note.trim()) await api.post("/api/jobs/" + jobId + "/notes", { text: note });
       document.getElementById("round-dialog").close();
       toast("Round saved");
       load();
@@ -366,7 +379,6 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     fillSelect(document.getElementById("round-type"), ROUND_LABELS);
-    fillSelect(document.getElementById("round-outcome"), RESULT_LABELS);
     fillSelect(document.getElementById("debrief-outcome"), RESULT_LABELS);
     fillSelect(document.getElementById("status-select"), STATUS_LABELS);
     scale("felt-scale", "feltScore");

@@ -80,11 +80,12 @@
 <dialog id="round-dialog">
   <form id="round-form" method="dialog">
     <h2 id="round-title">Add round</h2>
+    <label>Type <select name="type" id="round-type"></select></label>
     <div class="form-grid">
-      <label>Type <select name="type" id="round-type"></select></label>
-      <label><span id="round-date-label">Date and time</span> <input type="datetime-local" name="scheduledAt" /></label>
-      <label>Result <select name="outcome" id="round-outcome"></select></label>
+      <label><span id="round-date-label">Date</span> <input type="date" name="date" /></label>
+      <label>Time <select name="time" id="round-time"></select></label>
     </div>
+    <label>Note <textarea name="note" rows="3" maxlength="20000"></textarea></label>
     <div class="dialog-actions">
       <button type="button" id="round-delete" class="danger left" hidden>Delete round</button>
       <button type="button" data-close>Cancel</button>

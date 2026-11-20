@@ -12,8 +12,8 @@
   };
   const CLOSED_STATUSES = ["ACCEPTED", "DECLINED", "REJECTED", "WITHDRAWN", "GHOSTED"];
   const ROUND_LABELS = {
-    SCREENING: "Screening", TECHNICAL: "Technical", TAKE_HOME: "Take-home", BEHAVIORAL: "Behavioral",
-    HIRING_MANAGER: "Hiring manager", ONSITE: "Onsite", FINAL: "Final", OTHER: "Other",
+    SCREENING: "Screening", TECHNICAL: "Technical", TAKE_HOME: "Take-home",
+    HIRING_MANAGER: "Hiring manager", FINAL: "Final", OTHER: "Other",
   };
   const RESULT_LABELS = { PENDING: "Pending", PASSED: "Passed", FAILED: "Failed", CANCELLED: "Cancelled" };
 
