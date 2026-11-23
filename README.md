@@ -1,6 +1,7 @@
 # Job Hunt Command Center
 
-A personal tracker for ongoing job applications.
+A personal tracker for ongoing job applications. **Discontinued**, replaced by
+[ASAP (Applications Saved As Private)](https://github.com/heaped-and-stacked/applications-saved-as-private).
 
 The goal of the app is to help me organize my notes, details and preparation around interviews. A central place to collect
 the activity in recruitment process, as usually when one looks for a job they have several leads ongoing at a time.
@@ -10,12 +11,17 @@ both of them offer more features than I need, with AI tailored resume writing, c
 
 Ultimately, I decided to implement my own solution for this and the primary reason was the desire to own my own data.
 This topic is sensitive-data, the job posting is public, but my application, feedback and offer is not.
-I don't expect much usage from other people for this app, so I tailored it for myself. It is free to try out if anybody would like to:
 
-**Live at [job-hunt-center.onrender.com](https://job-hunt-center.onrender.com)** 
+## Discontinued
 
-I decided to use free tier hosting, both for server and database, and code fully written by AI for this app.
-The UI does not have a separate repository and uses plain js and html, out of simplicity. Exploring using something like Solid 2.0 for it.
+The hosted copy is taken down and this repository is no longer maintained.
+
+A server with a database works against the reason this app exists. The data sits in a database hosted by someone else,
+and whoever runs it, me included, can read it. On free plans it also sleeps when idle, has no backups and can disappear at any time.
+
+ASAP keeps the idea and drops the server. It is a static page with no database, and each user's data stays in a single file
+in their own Google Drive, synced across their devices, phone included. Most of the logic had to move to the browser for this
+anyway, so it was also a good chance to try Solid 2.0.
 
 ## What it does
 
@@ -24,15 +30,6 @@ The UI does not have a separate repository and uses plain js and html, out of si
 - Add notes to each application to quickly remember key details
 - Add interview-ing rounds and debriefs 
 - A small nudge when enough time has passed without hearing anything from a company, hinting you to follow up
-
-## Free tier issues
-
-It runs on free plans, as an experiment.
-
-- It sleeps when idle, so the first load can take about a minute.
-- There are no backups, so your data could be lost.
-- It could stop or disappear at any time.
-- Your data is kept apart from other users, but I can read the database.
 
 ## Run it locally
 
